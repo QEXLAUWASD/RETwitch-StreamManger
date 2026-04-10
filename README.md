@@ -1,5 +1,7 @@
 # Twitch OBS Title Updater
 
+> [繁體中文](README.zh_TW.md)
+
 An OBS Studio plugin that automatically updates your Twitch stream title and category based on the game process currently running on your PC.
 
 ## Features
@@ -22,12 +24,22 @@ An OBS Studio plugin that automatically updates your Twitch stream title and cat
 
 ## Installation
 
-1. Download the latest release `.dll` from the [Releases](../../releases) page.
-2. Copy `TwitchOBSTitleUpdater.dll` into your OBS plugins folder:
+### Option A — Installer (recommended)
+
+1. Download the latest `TwitchOBSTitleUpdater-*-windows-x64-installer.exe` from the [Releases](../../releases) page.
+2. Run the installer. It will automatically detect your OBS Studio install directory and place all files in the correct locations.
+3. Restart OBS Studio.
+
+### Option B — Manual (ZIP / DLL)
+
+1. Download the latest `.zip` (or standalone `.dll`) from the [Releases](../../releases) page.
+2. Extract and copy the files to your OBS plugins folder:
    ```
-   %ProgramFiles%\obs-studio\obs-plugins\64bit\
+   %ProgramFiles%\obs-studio\obs-plugins\64bit\TwitchOBSTitleUpdater.dll
+   %ProgramFiles%\obs-studio\data\obs-plugins\TwitchOBSTitleUpdater\locale\en-US.ini
    ```
 3. Restart OBS Studio.
+
 4. Open **Tools → Twitch Auto-Title** and enter your Twitch credentials when prompted.
 
 ## Twitch Credentials
@@ -46,13 +58,13 @@ Credentials are stored locally in `%AppData%\obs-studio\plugin_config\twitch-aut
 
 1. Open **Tools → Twitch Auto-Title**.
 2. Select a running process from the process list, fill in the **Game Name** and **Twitch Category**, then click **Add / Update Mapping**.
-3. The plugin polls running processes every 5 seconds. When a mapped process is detected, it automatically PATCHes your Twitch channel title and category.
+3. The plugin polls running processes every 5 seconds. When a mapped process is detected, it automatically updates your Twitch channel title and category.
 4. Use **Edit Exclusions** to prevent background apps from being matched.
 5. Use **Manual Update Title/Category** to trigger an immediate update.
 
 ### Title Template
 
-The default template is ` %game% %date%`. You can change it by editing `config.json` directly (or reloading with the **Reload config.json** button):
+The default template is `%game% %date%`. You can customise it in the dialog or by editing `config.json` and clicking **Reload config.json**:
 
 ```json
 {
@@ -70,27 +82,34 @@ The default template is ` %game% %date%`. You can change it by editing `config.j
 ### Prerequisites
 
 - CMake 3.28+
-- Visual Studio 2022 (Build Tools)
-- Windows SDK 10.0.26100.0 or newer
+- Visual Studio 2022 (Build Tools) with the **Desktop development with C++** workload
+- PowerShell 7.2+
 
 ### Steps
 
 ```powershell
-git clone https://github.com/QEXLAUWASD/Twitch-StreamManger
-cd Twitch-StreamManger
+git clone https://github.com/QEXLAUWASD/OBSTwitch-StreamManger
+cd OBSTwitch-StreamManger
 
-cmake -S . -B build_x64 `
-  -G "Visual Studio 17 2022" -A x64 `
-  "-DCMAKE_SYSTEM_VERSION=10.0.26100.0" `
-  -DENABLE_FRONTEND_API=ON -DENABLE_QT=ON
+# Configure (downloads OBS sources, Qt6, obs-deps automatically)
+cmake --preset windows-x64
 
-cmake --build build_x64 --config RelWithDebInfo --parallel
+# Build
+cmake --build --preset windows-x64 --config RelWithDebInfo --parallel
+
+# Install to release/
+cmake --install build_x64 --prefix release/RelWithDebInfo --config RelWithDebInfo
 ```
 
-The plugin DLL will be at `build_x64\RelWithDebInfo\TwitchOBSTitleUpdater.dll`.
+The plugin DLL will be at `release\RelWithDebInfo\TwitchOBSTitleUpdater\bin\64bit\TwitchOBSTitleUpdater.dll`.
 
-Dependencies (OBS sources, Qt6, obs-deps) are downloaded automatically during CMake configure.
+To also produce the installer, run (requires [NSIS](https://nsis.sourceforge.io/)):
+
+```powershell
+$env:CI = '1'
+.github/scripts/Package-Windows.ps1
+```
 
 ## License
 
-[MIT](LICENSE)
+[GPL-2.0-or-later](LICENSE)
