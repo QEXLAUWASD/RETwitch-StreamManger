@@ -78,6 +78,38 @@ function Package {
         Log-Warning "DLL not found at ${DllSource}, skipping standalone DLL copy"
     }
     Log-Group
+
+    Log-Group "Building Windows Installer..."
+    $NsisScript = "${ProjectRoot}/installer/installer.nsi"
+
+    $MakeNsis = Get-Command makensis -ErrorAction SilentlyContinue
+    if (-not $MakeNsis) {
+        Log-Information "NSIS not found, installing via Chocolatey..."
+        choco install nsis -y --no-progress 2>&1 | Out-Null
+        $env:PATH = [System.Environment]::GetEnvironmentVariable('PATH', 'Machine') + ';' + $env:PATH
+        $MakeNsis = Get-Command makensis -ErrorAction SilentlyContinue
+    }
+
+    if ($MakeNsis) {
+        $BuildDir = "${ProjectRoot}/release/${Configuration}"
+        $NsisArgs = @(
+            "/DPRODUCT_VERSION=${ProductVersion}",
+            "/DBUILD_DIR=${BuildDir}",
+            "/DOUTPUT_DIR=${ProjectRoot}/release",
+            $NsisScript
+        )
+        Invoke-External makensis @NsisArgs
+
+        $InstallerSource = "${ProjectRoot}/release/${ProductName}-${ProductVersion}-windows-x64-installer.exe"
+        if (Test-Path $InstallerSource) {
+            Log-Information "Installer created at ${InstallerSource}"
+        } else {
+            Log-Warning "Expected installer not found at ${InstallerSource}"
+        }
+    } else {
+        Log-Warning "makensis not available – skipping installer creation"
+    }
+    Log-Group
 }
 
 Package
