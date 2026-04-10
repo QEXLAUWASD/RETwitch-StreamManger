@@ -89,6 +89,8 @@
       "generator": "Ninja",
       "warnings": {"dev": true, "deprecated": true},
       "cacheVariables": {
+        "ENABLE_FRONTEND_API": true,
+        "ENABLE_QT": true,
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
         "CMAKE_INSTALL_LIBDIR": "lib/CMAKE_SYSTEM_PROCESSOR-linux-gnu"
       }
