@@ -26,7 +26,7 @@ An OBS Studio plugin that automatically updates your Twitch stream title and cat
 
 ### Option A — Installer (recommended)
 
-1. Download the latest `TwitchOBSTitleUpdater-*-windows-x64-installer.exe` from the [Releases](../../releases) page.
+1. Download the latest `RETwitchTitleUpdater-*-windows-x64-installer.exe` from the [Releases](../../releases) page.
 2. Run the installer. It will automatically detect your OBS Studio install directory and place all files in the correct locations.
 3. Restart OBS Studio.
 
@@ -35,8 +35,8 @@ An OBS Studio plugin that automatically updates your Twitch stream title and cat
 1. Download the latest `.zip` (or standalone `.dll`) from the [Releases](../../releases) page.
 2. Extract and copy the files to your OBS plugins folder:
    ```
-   %ProgramFiles%\obs-studio\obs-plugins\64bit\TwitchOBSTitleUpdater.dll
-   %ProgramFiles%\obs-studio\data\obs-plugins\TwitchOBSTitleUpdater\locale\en-US.ini
+   %ProgramFiles%\obs-studio\obs-plugins\64bit\RETwitchTitleUpdater.dll
+   %ProgramFiles%\obs-studio\data\obs-plugins\RETwitchTitleUpdater\locale\en-US.ini
    ```
 3. Restart OBS Studio.
 
@@ -101,7 +101,7 @@ cmake --build --preset windows-x64 --config RelWithDebInfo --parallel
 cmake --install build_x64 --prefix release/RelWithDebInfo --config RelWithDebInfo
 ```
 
-The plugin DLL will be at `release\RelWithDebInfo\TwitchOBSTitleUpdater\bin\64bit\TwitchOBSTitleUpdater.dll`.
+The plugin DLL will be at `release\RelWithDebInfo\RETwitchTitleUpdater\bin\64bit\RETwitchTitleUpdater.dll`.
 
 To also produce the installer, run (requires [NSIS](https://nsis.sourceforge.io/)):
 

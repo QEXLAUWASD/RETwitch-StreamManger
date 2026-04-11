@@ -26,7 +26,7 @@
 
 ### 方法 A — 安裝程式（建議）
 
-1. 從 [Releases](../../releases) 頁面下載最新的 `TwitchOBSTitleUpdater-*-windows-x64-installer.exe`。
+1. 從 [Releases](../../releases) 頁面下載最新的 `RETwitchTitleUpdater-*-windows-x64-installer.exe`。
 2. 執行安裝程式，它會自動偵測你的 OBS Studio 安裝目錄，並將所有檔案放置至正確位置。
 3. 重新啟動 OBS Studio。
 
@@ -35,8 +35,8 @@
 1. 從 [Releases](../../releases) 頁面下載最新的 `.zip`（或獨立 `.dll`）。
 2. 解壓縮後，將檔案複製至 OBS 外掛資料夾：
    ```
-   %ProgramFiles%\obs-studio\obs-plugins\64bit\TwitchOBSTitleUpdater.dll
-   %ProgramFiles%\obs-studio\data\obs-plugins\TwitchOBSTitleUpdater\locale\en-US.ini
+   %ProgramFiles%\obs-studio\obs-plugins\64bit\RETwitchTitleUpdater.dll
+   %ProgramFiles%\obs-studio\data\obs-plugins\RETwitchTitleUpdater\locale\en-US.ini
    ```
 3. 重新啟動 OBS Studio。
 
@@ -101,7 +101,7 @@ cmake --build --preset windows-x64 --config RelWithDebInfo --parallel
 cmake --install build_x64 --prefix release/RelWithDebInfo --config RelWithDebInfo
 ```
 
-外掛 DLL 位於 `release\RelWithDebInfo\TwitchOBSTitleUpdater\bin\64bit\TwitchOBSTitleUpdater.dll`。
+外掛 DLL 位於 `release\RelWithDebInfo\RETwitchTitleUpdater\bin\64bit\RETwitchTitleUpdater.dll`。
 
 若需同時產生安裝程式，請執行（需安裝 [NSIS](https://nsis.sourceforge.io/)）：
 
