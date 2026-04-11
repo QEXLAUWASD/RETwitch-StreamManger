@@ -19,8 +19,8 @@
 
 Unicode True
 
-!define PRODUCT_NAME    "Twitch OBS Title Updater"
-!define PLUGIN_NAME     "TwitchOBSTitleUpdater"
+!define PRODUCT_NAME    "RETwitch Title Updater"
+!define PLUGIN_NAME     "RETwitchTitleUpdater"
 !define OBS_REG_KEY     "SOFTWARE\OBS Studio"
 !define UNINST_REG_KEY  "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${PLUGIN_NAME}"
 
