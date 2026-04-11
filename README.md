@@ -1,4 +1,4 @@
-# Twitch OBS Title Updater
+# Twitch Title Updater
 
 > [繁體中文](README.zh_TW.md)
 
@@ -88,8 +88,8 @@ The default template is `%game% %date%`. You can customise it in the dialog or b
 ### Steps
 
 ```powershell
-git clone https://github.com/QEXLAUWASD/OBSTwitch-StreamManger
-cd OBSTwitch-StreamManger
+git clone https://github.com/QEXLAUWASD/RETwitch-StreamManger
+cd RETwitch-StreamManger
 
 # Configure (downloads OBS sources, Qt6, obs-deps automatically)
 cmake --preset windows-x64

@@ -1,4 +1,4 @@
-# Twitch OBS 標題自動更新器
+# Twitch 標題自動更新器
 
 > [English](README.md)
 
@@ -88,8 +88,8 @@
 ### 步驟
 
 ```powershell
-git clone https://github.com/QEXLAUWASD/OBSTwitch-StreamManger
-cd OBSTwitch-StreamManger
+git clone https://github.com/QEXLAUWASD/RETwitch-StreamManger
+cd RETwitch-StreamManger
 
 # 設定（自動下載 OBS 原始碼、Qt6、obs-deps）
 cmake --preset windows-x64
