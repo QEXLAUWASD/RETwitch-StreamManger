@@ -215,7 +215,7 @@ bool saveExcludedProcesses(const std::string &baseDir, const AppState &state)
 }
 
 bool addOrUpdateGame(const std::string &baseDir, AppState &state, const std::string &gameName,
-             const std::string &processName, const std::string &twitchCategory)
+                     const std::string &processName, const std::string &twitchCategory)
 {
 	// Validate input lengths and characters
 	if (gameName.empty() || processName.empty()) {

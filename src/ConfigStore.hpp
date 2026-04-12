@@ -4,7 +4,8 @@
 #pragma once
 
 #include <string>
-#include <optional>
+
+#include "AppState.hpp"  // Required for AppState type
 
 struct TwitchCredentials {
 	std::string clientId;
