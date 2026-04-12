@@ -85,8 +85,8 @@ bool TwitchClient::updateStreamTitle(const std::string &title)
 	lock.release();
 
 	QUrl url(QString("https://api.twitch.tv/helix/channels"
-				 "?broadcaster_id=%1")
-				 .arg(QString::fromStdString(streamerId_)));
+			 "?broadcaster_id=%1")
+			 .arg(QString::fromStdString(streamerId_)));
 	QNetworkRequest request{url};
 	applyHelixHeaders(request, clientId_, accessToken_);
 

@@ -680,8 +680,8 @@ void TwitchAutoTitleDialog::checkForUpdate()
 {
 	auto *manager = new QNetworkAccessManager(this);
 	QNetworkRequest request{QUrl(QString("https://api.github.com/repos/%1/"
-                                     "releases/latest")
-                                     .arg(kDefaultGithubRepo))};
+					     "releases/latest")
+					     .arg(kDefaultGithubRepo))};
 	request.setRawHeader("Accept", "application/vnd.github+json");
 	request.setHeader(QNetworkRequest::UserAgentHeader, "twitch-auto-title-obs-plugin");
 
