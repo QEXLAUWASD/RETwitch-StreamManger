@@ -143,10 +143,6 @@ bool saveConfig(const std::string &baseDir, const AppState &state)
 	}
 
 	QJsonDocument doc(obj);
-	// Limit file size to prevent potential issues
-	if (doc.size() > 10 * 1024 * 1024) {  // 10MB limit
-		blog(LOG_WARNING, "[twitch-auto-title] Config too large, truncating");
-	}
 	file.write(doc.toJson());
 	return true;
 }
@@ -231,12 +227,7 @@ bool addOrUpdateGame(const std::string &baseDir, AppState &state, const std::str
 		return false;
 	}
 
-	// Reject names with potentially problematic characters
-	if (gameName.find(0) != std::string::npos || 
-        processName.find(0) != std::string::npos) {
-		blog(LOG_WARNING, "[twitch-auto-title] Invalid character in input, rejecting");
-		return false;
-	}
+	// Already validated length above; no additional character check needed
 
 	state.processNames[gameName] = processName;
 	if (!twitchCategory.empty() && twitchCategory.length() <= 100) {

@@ -17,7 +17,7 @@ struct TwitchCredentials {
 
 std::string getBaseDir();
 
-bool loadConfig(const std::string &baseDir, AppState &state);
+// AppState is forward-declared in AppState.hpp - no need to redeclare here
 bool saveConfig(const std::string &baseDir, const AppState &state);
 
 bool loadExcludedProcesses(const std::string &baseDir, AppState &state);
