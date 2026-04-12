@@ -138,8 +138,9 @@ bool saveConfig(const std::string &baseDir, const AppState &state)
 	obj["TwitchCategoryName"] = cats;
 
 	QFile file(QString::fromStdString(baseDir) + "/config.json");
-	if (!file.open(QIODevice::WriteOnly)) {
-		blog(LOG_WARNING, "[twitch-auto-title] Could not save config.json");
+	if (!	file.open(QIODevice::WriteOnly)) {
+		blog(LOG_WARNING, "[twitch-auto-title] Could not save config.json: %s", 
+		     file.errorString().toStdString().c_str());
 		return false;
 	}
 

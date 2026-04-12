@@ -21,6 +21,8 @@
 #include <QPushButton>
 #include <QRegularExpression>
 #include <QVBoxLayout>
+#include <mutex>
+#include <thread>
 
 #include "ConfigStore.hpp"
 #include "ProcessMonitor.hpp"
@@ -62,7 +64,9 @@ TwitchAutoTitleDialog::TwitchAutoTitleDialog(QWidget *parent)
 	// Hot-reload config.json on external change
 	QString configPath = QString::fromStdString(baseDir_) + "/config.json";
 	configWatcher_.addPath(configPath);
-	connect(&configWatcher_, &QFileSystemWatcher::fileChanged, this, [this](const QString &) {
+	static std::mutex configMutex;
+	connect(&configWatcher_, &QFileSystemWatcher::fileChanged, this, [this]() {
+		std::lock_guard<std::mutex> lock(configMutex);
 		loadConfig(baseDir_, state_);
 		refreshMappingsList();
 	});
@@ -290,8 +294,7 @@ void TwitchAutoTitleDialog::onRemoveSelected()
 		return;
 	}
 
-	QString item = selected[0]->text();
-	QString game = item.split("->")[0].trimmed();
+	QString game = selected[0]->text().split("->")[0].trimmed();
 
 	auto choice = QMessageBox::question(this, "Confirm", QString("Remove mapping for '%1'?").arg(game));
 	if (choice != QMessageBox::Yes) {
@@ -677,10 +680,28 @@ void TwitchAutoTitleDialog::checkForUpdate()
 {
 	auto *manager = new QNetworkAccessManager(this);
 	QNetworkRequest request{QUrl(QString("https://api.github.com/repos/%1/"
-					     "releases/latest")
-					     .arg(kGithubRepo))};
+                                     "releases/latest")
+                                     .arg(kDefaultGithubRepo))};
 	request.setRawHeader("Accept", "application/vnd.github+json");
 	request.setHeader(QNetworkRequest::UserAgentHeader, "twitch-auto-title-obs-plugin");
+
+	// Rate limiting: prevent excessive API calls
+	static std::mutex apiMutex;
+	static std::chrono::steady_clock::time_point lastRequestTime;
+	static constexpr auto RATE_LIMIT_INTERVAL = std::chrono::seconds(1);
+
+	std::unique_lock<std::mutex> lock(apiMutex, std::defer_lock);
+	if (!lock.try_lock()) {
+		return; // Already processing, skip this update
+	}
+
+	auto now = std::chrono::steady_clock::now();
+	if (now - lastRequestTime < RATE_LIMIT_INTERVAL) {
+		std::this_thread::sleep_until(lastRequestTime + RATE_LIMIT_INTERVAL);
+	}
+	lastRequestTime = now;
+
+	lock.release();
 
 	QNetworkReply *reply = manager->get(request);
 	connect(reply, &QNetworkReply::finished, this, [this, reply, manager]() {

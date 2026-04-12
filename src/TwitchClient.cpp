@@ -14,6 +14,9 @@
 #include <QNetworkRequest>
 #include <QUrl>
 #include <QUrlQuery>
+#include <mutex>
+#include <chrono>
+#include <thread>
 
 #include <obs-module.h>
 
@@ -63,9 +66,27 @@ bool TwitchClient::updateStreamTitle(const std::string &title)
 		return false;
 	}
 
+	// Rate limiting: prevent excessive API calls
+	static std::mutex apiMutex;
+	static std::chrono::steady_clock::time_point lastRequestTime;
+	static constexpr auto RATE_LIMIT_INTERVAL = std::chrono::seconds(1);
+
+	std::unique_lock<std::mutex> lock(apiMutex, std::defer_lock);
+	if (!lock.try_lock()) {
+		return false; // Already processing, skip this update
+	}
+
+	auto now = std::chrono::steady_clock::now();
+	if (now - lastRequestTime < RATE_LIMIT_INTERVAL) {
+		std::this_thread::sleep_until(lastRequestTime + RATE_LIMIT_INTERVAL);
+	}
+	lastRequestTime = now;
+
+	lock.release();
+
 	QUrl url(QString("https://api.twitch.tv/helix/channels"
-			 "?broadcaster_id=%1")
-			 .arg(QString::fromStdString(streamerId_)));
+				 "?broadcaster_id=%1")
+				 .arg(QString::fromStdString(streamerId_)));
 	QNetworkRequest request{url};
 	applyHelixHeaders(request, clientId_, accessToken_);
 
@@ -111,7 +132,12 @@ bool TwitchClient::updateStreamCategory(const std::string &category)
 		return false;
 	}
 
-	QJsonArray games = QJsonDocument::fromJson(searchBody).object()["data"].toArray();
+	QJsonObject root = QJsonDocument::fromJson(searchBody).object();
+	if (root.isEmpty()) {
+		blog(LOG_WARNING, "[twitch-auto-title] Empty response from game search");
+		return false;
+	}
+	QJsonArray games = root["data"].toArray();
 
 	if (games.isEmpty()) {
 		blog(LOG_WARNING, "[twitch-auto-title] Game '%s' not found on Twitch", category.c_str());
@@ -151,13 +177,20 @@ bool TwitchClient::updateStreamCategory(const std::string &category)
 std::string formatTitle(const std::string &titleTemplate, const std::string &game)
 {
 	std::time_t now = std::time(nullptr);
-	char dateBuf[16] = {};
-	struct tm *localTime = std::localtime(&now);
-	if (localTime) {
-		std::strftime(dateBuf, sizeof(dateBuf), "%Y-%m-%d", localTime);
-	}
 
 	std::string result = titleTemplate;
+
+	// Use fixed-size buffer for date to prevent buffer overflow
+	constexpr size_t DATE_BUF_SIZE = 11; // YYYY-MM-DD needs 10 chars + null terminator
+	std::string dateBuf;
+	{
+		char buffer[DATE_BUF_SIZE] = {};
+		struct tm *localTime = std::localtime(&now);
+		if (localTime) {
+			std::strftime(buffer, DATE_BUF_SIZE, "%Y-%m-%d", localTime);
+			dateBuf = buffer;
+		}
+	}
 
 	auto replaceAll = [](std::string &str, const std::string &from, const std::string &to) {
 		size_t pos = 0;

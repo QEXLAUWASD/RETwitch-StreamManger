@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-inline constexpr const char *kAppVersion = "1.0.0";
-inline constexpr const char *kGithubRepo = "QEXLAUWASD/Twitch-StreamManger";
+inline constexpr const char *kAppVersion = "1.1.1";
+inline constexpr const char *kDefaultGithubRepo = "QEXLAUWASD/Twitch-StreamManger";
 
 struct AppState {
 	std::map<std::string, std::string> processNames;
