@@ -36,16 +36,18 @@ endif()
 
 target_sources(
   ${CMAKE_PROJECT_NAME}
-  PRIVATE src/plugin-main.cpp
-          src/AppState.hpp
-          src/ConfigStore.hpp
-          src/ConfigStore.cpp
-          src/ProcessMonitor.hpp
-          src/ProcessMonitor.cpp
-          src/TwitchClient.hpp
-          src/TwitchClient.cpp
-          src/TwitchAutoTitleDialog.hpp
-          src/TwitchAutoTitleDialog.cpp)
+  PRIVATE
+    src/plugin-main.cpp
+    src/AppState.hpp
+    src/ConfigStore.hpp
+    src/ConfigStore.cpp
+    src/ProcessMonitor.hpp
+    src/ProcessMonitor.cpp
+    src/TwitchClient.hpp
+    src/TwitchClient.cpp
+    src/TwitchAutoTitleDialog.hpp
+    src/TwitchAutoTitleDialog.cpp
+)
 
 if(OS_WINDOWS)
   target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE psapi)
@@ -54,21 +56,20 @@ if(OS_WINDOWS)
   find_file(
     QT_SCHANNEL_DLL
     NAMES qschannelbackend.dll
-    PATHS "${Qt6_DIR}/../../../plugins/tls"
-          "${Qt6Core_DIR}/../../../plugins/tls"
-    NO_DEFAULT_PATH)
+    PATHS "${Qt6_DIR}/../../../plugins/tls" "${Qt6Core_DIR}/../../../plugins/tls"
+    NO_DEFAULT_PATH
+  )
   if(QT_SCHANNEL_DLL)
     add_custom_command(
-      TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E make_directory
-              "$<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/tls"
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different "${QT_SCHANNEL_DLL}"
-              "$<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/tls/qschannelbackend.dll"
-      COMMENT "Copying Qt TLS plugin (qschannelbackend.dll)")
-    install(
-      FILES "${QT_SCHANNEL_DLL}"
-      DESTINATION "obs-plugins/64bit/tls"
-      COMPONENT Runtime)
+      TARGET ${CMAKE_PROJECT_NAME}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/tls"
+      COMMAND
+        ${CMAKE_COMMAND} -E copy_if_different "${QT_SCHANNEL_DLL}"
+        "$<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/tls/qschannelbackend.dll"
+      COMMENT "Copying Qt TLS plugin (qschannelbackend.dll)"
+    )
+    install(FILES "${QT_SCHANNEL_DLL}" DESTINATION "obs-plugins/64bit/tls" COMPONENT Runtime)
   else()
     message(WARNING "qschannelbackend.dll not found — HTTPS may not work")
   endif()
