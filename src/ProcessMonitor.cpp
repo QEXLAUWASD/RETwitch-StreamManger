@@ -9,6 +9,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <psapi.h>
 #endif
 
 static std::string strToLower(std::string s)
