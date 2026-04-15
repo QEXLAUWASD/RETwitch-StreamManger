@@ -32,6 +32,16 @@ static void openDialog(void *)
 	dialog->activateWindow();
 }
 
+static void onFrontendEvent(enum obs_frontend_event event, void *)
+{
+	if (event == OBS_FRONTEND_EVENT_FINISHED_LOADING) {
+		if (!dialog) {
+			auto *mainWindow = static_cast<QWidget *>(obs_frontend_get_main_window());
+			dialog = new TwitchAutoTitleDialog(mainWindow);
+		}
+	}
+}
+
 bool obs_module_load(void)
 {
 	// Register the plugin's own directory so Qt can locate the TLS
@@ -43,11 +53,13 @@ bool obs_module_load(void)
 	}
 
 	obs_frontend_add_tools_menu_item(obs_module_text("TwitchAutoTitle.MenuTitle"), openDialog, nullptr);
+	obs_frontend_add_event_callback(onFrontendEvent, nullptr);
 	return true;
 }
 
 void obs_module_unload(void)
 {
+	obs_frontend_remove_event_callback(onFrontendEvent, nullptr);
 	delete dialog;
 	dialog = nullptr;
 }
